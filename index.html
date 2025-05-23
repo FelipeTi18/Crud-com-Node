@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerenciar Cursos</title>
+</head>
+<body>
+  <h1>Cursos</h1>
+  <ul id="listaCursos"></ul>
+
+  <input type="text" id="nomeCurso" placeholder="Novo curso">
+  <button onclick="adicionarCurso()">Adicionar</button>
+
+  <script>
+    const urlBase = 'http://localhost:3000/cursos';
+
+    // Listar cursos
+    async function carregarCursos() {
+      const resposta = await fetch(urlBase);
+      const cursos = await resposta.json();
+
+      const lista = document.getElementById('listaCursos');
+      lista.innerHTML = '';
+
+      cursos.forEach((curso, index) => {
+        const item = document.createElement('li');
+        item.innerHTML = `
+          ${curso}
+          <button onclick="editarCurso(${index})">Editar</button>
+          <button onclick="deletarCurso(${index})">Excluir</button>
+        `;
+        lista.appendChild(item);
+      });
+    }
+
+    // Adicionar curso
+    async function adicionarCurso() {
+      const nome = document.getElementById('nomeCurso').value;
+      if (!nome) return alert('Digite o nome do curso');
+
+      await fetch(urlBase, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: nome })
+      });
+
+      document.getElementById('nomeCurso').value = '';
+      carregarCursos();
+    }
+
+    // Editar curso
+    async function editarCurso(index) {
+      const novoNome = prompt('Digite o novo nome do curso:');
+      if (!novoNome) return;
+
+      await fetch(`${urlBase}/${index}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: novoNome })
+      });
+
+      carregarCursos();
+    }
+
+    // Deletar curso
+    async function deletarCurso(index) {
+      if (!confirm('Tem certeza que deseja excluir este curso?')) return;
+
+      await fetch(`${urlBase}/${index}`, {
+        method: 'DELETE'
+      });
+
+      carregarCursos();
+    }
+
+    // Inicializar
+    carregarCursos();
+  </script>
+</body>
+</html>
