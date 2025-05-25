@@ -3,35 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <title>Gerenciar Cursos</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <h1>Cursos</h1>
-  <ul id="listaCursos"></ul>
+  <h1>Gerenciamento de Cursos</h1>
 
-  <input type="text" id="nomeCurso" placeholder="Novo curso">
-  <button onclick="adicionarCurso()">Adicionar</button>
+  <div class="addCurso">
+    <input type="text" id="nomeCurso" placeholder="Novo curso">
+    <button onclick="adicionarCurso()">Adicionar</button>
+  </div>
+  
+
+<table id="listaCursos">
+  <thead>
+    <tr>
+      <th>Curso</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+  
 
   <script>
     const urlBase = 'http://localhost:3000/cursos';
 
     // Listar cursos
     async function carregarCursos() {
-      const resposta = await fetch(urlBase);
-      const cursos = await resposta.json();
+  const resposta = await fetch(urlBase);
+  const cursos = await resposta.json();
 
-      const lista = document.getElementById('listaCursos');
-      lista.innerHTML = '';
+  const tbody = document.querySelector('#listaCursos tbody');
+  tbody.innerHTML = '';
 
-      cursos.forEach((curso, index) => {
-        const item = document.createElement('li');
-        item.innerHTML = `
-          ${curso}
-          <button onclick="editarCurso(${index})">Editar</button>
-          <button onclick="deletarCurso(${index})">Excluir</button>
-        `;
-        lista.appendChild(item);
-      });
-    }
+  cursos.forEach((curso, index) => {
+    const linha = document.createElement('tr');
+
+    linha.innerHTML = `
+      <td>${curso}</td>
+      <td class="acoes">
+        <button onclick="editarCurso(${index})"><i class="fa-solid fa-pen"></i></button>
+        <button onclick="deletarCurso(${index})"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    `;
+
+    tbody.appendChild(linha);
+  });
+}
+
 
     // Adicionar curso
     async function adicionarCurso() {
